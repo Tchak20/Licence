@@ -1,14 +1,14 @@
 import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
 
-class AddEventPages extends StatefulWidget {
-  const AddEventPages({super.key});
+class DiagnosticPage extends StatefulWidget {
+  const DiagnosticPage({super.key});
 
   @override
-  State<AddEventPages> createState() => _AddEventPagesState();
+  State<DiagnosticPage> createState() => _DiagnosticPageState();
 }
 
-class _AddEventPagesState extends State<AddEventPages> {
+class _DiagnosticPageState extends State<DiagnosticPage> {
   final _formKey = GlobalKey<FormState>();
   final confNameController = TextEditingController();
   final speakerNameController = TextEditingController();

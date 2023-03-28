@@ -40,6 +40,8 @@ dependencies:
   circular_reveal_animation: ^2.0.1
   date_field: ^3.0.2
   sidebar: ^0.0.1
+  scroll_snap_list: ^0.9.1
+  material_design_icons_flutter: ^6.0.7096
 
 dev_dependencies:
   flutter_test:
@@ -66,7 +68,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/
+    - images/
  
 
   # An image asset can refer to one or more resolution-specific "variants", see
