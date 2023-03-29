@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Screens/home_pages.dart';
 
 class SignInPage2 extends StatelessWidget {
   const SignInPage2({Key? key}) : super(key: key);
@@ -8,7 +9,8 @@ class SignInPage2 extends StatelessWidget {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
-        body: Center(
+        body:  Center(
+          child: SingleChildScrollView(
             child: isSmallScreen
                 ? Column(
                     mainAxisSize: MainAxisSize.min,
@@ -28,7 +30,7 @@ class SignInPage2 extends StatelessWidget {
                         ),
                       ],
                     ),
-                  )));
+                  ))));
   }
 }
 
@@ -42,20 +44,20 @@ class _Logo extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        FlutterLogo(size: isSmallScreen ? 100 : 200),
-        Padding(
+        SingleChildScrollView(
+        child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
-            "Welcome to Flutter!",
+            "CONNEXION",
             textAlign: TextAlign.center,
             style: isSmallScreen
-                ? Theme.of(context).textTheme.headline5
+                ? Theme.of(context).textTheme.headlineSmall
                 : Theme.of(context)
                     .textTheme
-                    .headline4
+                    .headlineMedium
                     ?.copyWith(color: Colors.black),
           ),
-        )
+        ))
       ],
     );
   }
@@ -76,7 +78,8 @@ class __FormContentState extends State<_FormContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SingleChildScrollView(
+       child: Container(
       constraints: const BoxConstraints(maxWidth: 300),
       child: Form(
         key: _formKey,
@@ -88,21 +91,21 @@ class __FormContentState extends State<_FormContent> {
               validator: (value) {
                 // add email validation
                 if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Veuillez saisir le mail';
                 }
 
                 bool emailValid = RegExp(
                         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                     .hasMatch(value);
                 if (!emailValid) {
-                  return 'Please enter a valid email';
+                  return 'Veuillez entrer un mail valide';
                 }
 
                 return null;
               },
               decoration: const InputDecoration(
                 labelText: 'Email',
-                hintText: 'Enter your email',
+                hintText: 'Entrer votre email',
                 prefixIcon: Icon(Icons.email_outlined),
                 border: OutlineInputBorder(),
               ),
@@ -111,18 +114,18 @@ class __FormContentState extends State<_FormContent> {
             TextFormField(
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Veuillez saisir le mot de passe';
                 }
 
                 if (value.length < 6) {
-                  return 'Password must be at least 6 characters';
+                  return 'Le mot de passe doit contenir 6 caractère au moins';
                 }
                 return null;
               },
               obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
-                  labelText: 'Password',
-                  hintText: 'Enter your password',
+                  labelText: 'Mot de passe ',
+                  hintText: 'Entrer votre mot de passe ',
                   prefixIcon: const Icon(Icons.lock_outline_rounded),
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
@@ -145,7 +148,7 @@ class __FormContentState extends State<_FormContent> {
                   _rememberMe = value;
                 });
               },
-              title: const Text('Remember me'),
+              title: const Text('Ce souvenir de moi '),
               controlAffinity: ListTileControlAffinity.leading,
               dense: true,
               contentPadding: const EdgeInsets.all(0),
@@ -161,13 +164,18 @@ class __FormContentState extends State<_FormContent> {
                 child: const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    'Sign in',
+                    'Connexion',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
-                    /// do something
+                    
+                 //     onTap: (){
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) =>const HomePage()
+                    ));
+                //};
                   }
                 },
               ),
@@ -175,7 +183,7 @@ class __FormContentState extends State<_FormContent> {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _gap() => const SizedBox(height: 16);

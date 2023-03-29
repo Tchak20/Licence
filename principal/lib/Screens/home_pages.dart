@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Newbar.dart';
 import 'package:flutter_application_1/Screens/diagnostic_page.dart';
 import 'package:flutter_application_1/Screens/plantes_page.dart';
+import 'package:flutter_application_1/Screens/proceder_page.dart';
 import 'package:sidebar/sidebar.dart';
 
 
@@ -29,11 +30,13 @@ class _HomePageState extends State<HomePage> {
           title: [
             Text('Diagnostic'),
             Text('Plantes'),
+             Text('Procéder médicinaux'),
           ][_currentIndex],
         ),
         body:[
           DiagnosticPage(),
           PlantesScreen(),
+          ProcederScreen(),
         ][_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -52,6 +55,10 @@ class _HomePageState extends State<HomePage> {
            BottomNavigationBarItem(
           icon: Icon(Icons.nature),
           label: 'Plantes'
+          ),
+           BottomNavigationBarItem(
+          icon: Icon(Icons.menu_book_outlined),
+          label: 'Procédés'
           ),
         ]),
       ),

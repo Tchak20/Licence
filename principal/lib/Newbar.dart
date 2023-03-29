@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Screens/diagnostic_page.dart';
+import 'package:flutter_application_1/Screens/home_pages.dart';
+import 'package:flutter_application_1/Screens/plantes_page.dart';
+import 'package:flutter_application_1/Screens/proceder_page.dart';
  
  class NavBar extends StatelessWidget {
   const NavBar({super.key});
@@ -6,7 +10,7 @@ import 'package:flutter/material.dart';
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
+      child:  ListView(
         padding: EdgeInsets.zero,
         children:  [
           UserAccountsDrawerHeader(
@@ -15,7 +19,7 @@ import 'package:flutter/material.dart';
           currentAccountPicture: CircleAvatar(
             child: ClipOval(
              child: Image.asset(
-              "images/doctor2.jpeg",
+              "images/profil.jpeg",
               width: 90,
               height: 90,
               fit: BoxFit.cover,
@@ -27,31 +31,54 @@ import 'package:flutter/material.dart';
             color: Colors.blue,
             image: DecorationImage(
               image: AssetImage(
-                "images/plante2.jpg"),
+                "images/back.jpeg"),
                fit: BoxFit.cover,),
             
           ),
           ),
-
+          
            ListTile(
-            leading: Icon(Icons.medical_services) ,
+            leading: Icon(Icons.medical_services, color: Colors.blue,) ,
             title: Text('Diagnostic'),
-            onTap: () => null,
+            onTap: (){
+              Navigator.push(context, MaterialPageRoute(
+                    builder: (context) =>HomePage()
+                    ));
+            },
           ),
            ListTile(
-            leading: Icon(Icons.nature) ,
+            leading: Icon(Icons.nature, color: Colors.blue) ,
             title: Text('Plantes'),
-            onTap: () => null,
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(
+                    builder: (context) =>PlantesScreen()
+                    ));
+            },
           ),
            ListTile(
-            leading: Icon(Icons.list) ,
+            leading: Icon(Icons.menu_book_outlined, color: Colors.blue) ,
+            title: Text('Procédés'),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(
+                    builder: (context) =>ProcederScreen()
+                    ));
+            },
+          ),
+           ListTile(
+            leading: Icon(Icons.list, color: Colors.blue) ,
             title: Text('Historique'),
-            onTap: () => null,
+            onTap: () {
+             /* Navigator.push(context, MaterialPageRoute(
+                    builder: (context) =>SignInPage2()
+                    ));
+            */},
           ),
            ListTile(
-            leading: Icon(Icons.logout) ,
+            leading: Icon(Icons.logout, color: Colors.blue) ,
             title: Text('Logout'),
-            onTap: () => null,
+            onTap: () {
+              
+            },
           ),
         ],
       ),

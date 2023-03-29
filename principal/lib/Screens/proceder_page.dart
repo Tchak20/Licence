@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class PlantesScreen extends StatelessWidget {
-  const PlantesScreen({Key? key}) : super(key: key);
+class ProcederScreen extends StatelessWidget {
+  const ProcederScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -125,10 +125,7 @@ class SecondPage extends StatelessWidget {
                 tag: heroTag,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(_images[heroTag],
-                  width: MediaQuery.of(context).size.width,
-                  height: 200,
-                  ),
+                  child: Image.asset(_images[heroTag]),
                 ),
               ),
             ),
@@ -147,11 +144,11 @@ class SecondPage extends StatelessWidget {
 
 final List<String> _images = [
   'images/plante1.jpg',
-  'images/plante1.jpg',
-  'images/plante1.jpg',
-  'images/plante1.jpg',
-  'images/plante1.jpg',
-  'images/plante1.jpg',
+  'images/plante2.jpg',
+  'images/plante3.jpg',
+  'images/plante4.jpg',
+  'images/doctor1.jpg',
+  'images/doctor2.jpg'
 ];
 final List<String> _names = [
   'Kinkeliba',
