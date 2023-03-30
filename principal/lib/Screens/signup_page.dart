@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Screens/home_pages.dart';
-import 'package:flutter_application_1/Screens/signup_page.dart';
 
-class SignInPage2 extends StatelessWidget {
-  const SignInPage2({Key? key}) : super(key: key);
+import 'login_page.dart';
+
+class SignUpPage2 extends StatelessWidget {
+  const SignUpPage2({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,7 @@ class _Logo extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
-            "CONNEXION",
+            "INSCRIPTION",
             textAlign: TextAlign.center,
             style: isSmallScreen
                 ? Theme.of(context).textTheme.headlineSmall
@@ -141,28 +142,15 @@ class __FormContentState extends State<_FormContent> {
                   )),
             ),
             _gap(),
-            CheckboxListTile(
-              value: _rememberMe,
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() {
-                  _rememberMe = value;
-                });
-              },
-              title: const Text('Ce souvenir de moi '),
-              controlAffinity: ListTileControlAffinity.leading,
-              dense: true,
-              contentPadding: const EdgeInsets.all(0),
-            ),
-            _gap(),
+           
            GestureDetector(
             onTap: () {
                Navigator.push(context, MaterialPageRoute(
-                    builder: (context) =>const SignUpPage2()
+                    builder: (context) =>const SignInPage2()
                     ));
             },
             child: Text(
-              "S'inscrire",
+              "Se connecter",
               style: TextStyle(
                 decoration: TextDecoration.underline,
                 color: Colors.blue,
@@ -180,7 +168,7 @@ class __FormContentState extends State<_FormContent> {
                 child: const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    'Connexion',
+                    'Inscription',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -189,7 +177,7 @@ class __FormContentState extends State<_FormContent> {
                     
                  //     onTap: (){
                   Navigator.push(context, MaterialPageRoute(
-                    builder: (context) =>const HomePage()
+                    builder: (context) =>const SignInPage2()
                     ));
                 //};
                   }

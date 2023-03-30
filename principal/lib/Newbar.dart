@@ -14,8 +14,8 @@ import 'package:flutter_application_1/Screens/proceder_page.dart';
         padding: EdgeInsets.zero,
         children:  [
           UserAccountsDrawerHeader(
-          accountName: Text('TCHAKOURA Bastou'), 
-          accountEmail: Text('tchakourabastou@gmail.com'),
+          accountName: const Text('TCHAKOURA Bastou'), 
+          accountEmail: const Text('tchakourabastou@gmail.com'),
           currentAccountPicture: CircleAvatar(
             child: ClipOval(
              child: Image.asset(

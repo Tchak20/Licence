@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Screens/Colors.dart';
 import 'package:flutter_application_1/Screens/login_page.dart';
+import 'package:flutter_application_1/Screens/signup_page.dart';
 
-import 'home_pages.dart';
 
 class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
+
   
 
   @override
@@ -15,7 +17,7 @@ class WelcomeScreen extends StatelessWidget {
         
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -29,11 +31,11 @@ class WelcomeScreen extends StatelessWidget {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Image.asset("images/logo.jpeg"),
             ),
-            SizedBox(height:50),
-            Text("NaturalDoc",
+            const SizedBox(height:50),
+            const Text("NaturalDoc",
             style: TextStyle(
               color: pColor,
               fontSize: 35,
@@ -42,8 +44,8 @@ class WelcomeScreen extends StatelessWidget {
               wordSpacing: 2,
             ),
             ),
-            SizedBox(height: 10),
-            Text(
+            const SizedBox(height: 10),
+            const Text(
               "Faite votre diagnostic",
                  style: TextStyle(
                  color: pColor,
@@ -53,19 +55,19 @@ class WelcomeScreen extends StatelessWidget {
                   wordSpacing: 2,
               ),
             ),
-            SizedBox(height: 60),
+            const SizedBox(height: 60),
             Material(
               color: pColor,
               borderRadius: BorderRadius.circular(10),
               child: InkWell(
                 onTap: (){
                   Navigator.push(context, MaterialPageRoute(
-                    builder: (context) =>SignInPage2()
+                    builder: (context) =>const SignUpPage2()
                     ));
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 15,horizontal: 40),
-                  child: Text(
+                  padding: const EdgeInsets.symmetric(vertical: 15,horizontal: 40),
+                  child: const Text(
                     "Commencer",
                     style: TextStyle(
                       color: wColor,

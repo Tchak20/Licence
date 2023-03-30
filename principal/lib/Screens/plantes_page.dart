@@ -133,12 +133,53 @@ class SecondPage extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: Text(
-              _names[heroTag],
-              style: Theme.of(context).textTheme.headlineSmall,
+         Expanded(
+          child:  SingleChildScrollView(
+            child: Column(
+             crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'A propos de ${_names[heroTag]} ',
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
             ),
-          )
+             Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Qu\'est ce que ${_names[heroTag]} :',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(_main[heroTag]),
+                ],
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'Soigne les maladies :',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding:  EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(_maladies[heroTag]),
+                ],
+              ),
+            ),
+          ],
+        ),),
+            ),
         ],
       ),
     );
@@ -160,4 +201,20 @@ final List<String> _names = [
   'Giroflier',
   'Machin',
   'Autre'
+];
+final List<String> _maladies = [
+  '-Kinkeliba \n -Moringa\n -Moringa\n -Moringa\n -Moringa',
+  'Moringa',
+  'Souchet',
+  'Giroflier',
+  'Machin',
+  'Autre'
+];
+final List<String> _main = [
+  'Le kinkéliba ou le Combretum micranthum est une plante originaire de l’Afrique de l’Ouest utilisée depuis des siècles en phytothérapie pour ses diverses vertus thérapeutiques notamment diurétiques, cholagogues ou anti-inflammatoires. Connue également sous le nom de tisane de longue vie ou quinquéliba, cette plante qui appartient à la famille des Combrétacées, est également utilisée comme infusion pour le traitement de la constipation ou contre les infections bactériennes.',
+  '- 2 tasses de racines de mandragore \n - 1 poignée de fleurs de lavande \n - 1/2 tasse de feuilles de menthe \n - 3 cuillères à soupe de miel \n - 1/4 tasse de sucre de canne \n - 4 tasses d\'eau',
+  'asthme',
+  'rhumatisme / arthrite',
+  'cholera',
+  'hypertension artérielle'
 ];

@@ -1,4 +1,3 @@
-import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
 
 class DiagnosticPage extends StatefulWidget {

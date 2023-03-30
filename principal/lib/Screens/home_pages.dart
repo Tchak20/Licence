@@ -3,7 +3,6 @@ import 'package:flutter_application_1/Newbar.dart';
 import 'package:flutter_application_1/Screens/diagnostic_page.dart';
 import 'package:flutter_application_1/Screens/plantes_page.dart';
 import 'package:flutter_application_1/Screens/proceder_page.dart';
-import 'package:sidebar/sidebar.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -28,15 +27,15 @@ class _HomePageState extends State<HomePage> {
         drawer: NavBar(),
         appBar: AppBar(
           title: [
-            Text('Diagnostic'),
-            Text('Plantes'),
-             Text('Procéder médicinaux'),
+            const Text('Diagnostic'),
+            const Text('Plantes'),
+             const Text('Procéder médicinaux'),
           ][_currentIndex],
         ),
         body:[
-          DiagnosticPage(),
-          PlantesScreen(),
-          ProcederScreen(),
+          const DiagnosticPage(),
+          const PlantesScreen(),
+          const ProcederScreen(),
         ][_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
