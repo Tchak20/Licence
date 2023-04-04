@@ -3,6 +3,7 @@ import 'package:flutter_application_1/Screens/home_pages.dart';
 
 import 'login_page.dart';
 
+
 class SignUpPage2 extends StatelessWidget {
   const SignUpPage2({Key? key}) : super(key: key);
 
@@ -74,9 +75,31 @@ class _FormContent extends StatefulWidget {
 
 class __FormContentState extends State<_FormContent> {
   bool _isPasswordVisible = false;
+  String _selectedValue = 'Option 1';
+  String? pass = '';
   bool _rememberMe = false;
+  bool? isChecked = false; // état initial de la case à cocher
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+   @override
+
+  Widget _buildRadio(String value) {
+    return Row(
+      children: <Widget>[
+        Radio(
+          value: value,
+          groupValue: _selectedValue,
+          onChanged: (String? newValue) {
+            setState(() {
+              _selectedValue = newValue!;
+            });
+          },
+        ),
+        Text(value, style: TextStyle(fontSize: 20,),),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +112,52 @@ class __FormContentState extends State<_FormContent> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+
+             TextFormField(
+              validator: (value) {
+                // add email validation
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez saisir le nom';
+                }
+
+                return null;
+              },
+              decoration: const InputDecoration(
+                labelText: 'Nom',
+                hintText: 'Entrer votre nom',
+                prefixIcon: Icon(Icons.person),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            _gap(),
+
+            TextFormField(
+              validator: (value) {
+                // add email validation
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez saisir le prenom';
+                }
+
+                return null;
+              },
+              decoration: const InputDecoration(
+                labelText: 'Prénom',
+                hintText: 'Entrer votre prénom',
+                prefixIcon: Icon(Icons.person),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            _gap(),
+     Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          _buildRadio('Masculin'),
+          _buildRadio('Féminin'),
+          
+        ],
+      ),
+          _gap(),
+
             TextFormField(
               validator: (value) {
                 // add email validation
@@ -113,8 +182,10 @@ class __FormContentState extends State<_FormContent> {
               ),
             ),
             _gap(),
+            
             TextFormField(
               validator: (value) {
+                pass = value;
                 if (value == null || value.isEmpty) {
                   return 'Veuillez saisir le mot de passe';
                 }
@@ -128,6 +199,36 @@ class __FormContentState extends State<_FormContent> {
               decoration: InputDecoration(
                   labelText: 'Mot de passe ',
                   hintText: 'Entrer votre mot de passe ',
+                  prefixIcon: const Icon(Icons.lock_outline_rounded),
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(_isPasswordVisible
+                        ? Icons.visibility_off
+                        : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  )),
+            ),
+            _gap(),
+
+              TextFormField(
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez saisir le mot de passe';
+                }
+
+                if (value != pass) {
+                  return 'Les mot de passes sont différents';
+                }
+                return null;
+              },
+              obscureText: !_isPasswordVisible,
+              decoration: InputDecoration(
+                  labelText: 'Mot de passe ',
+                  hintText: 'Retapez votre mot de passe ',
                   prefixIcon: const Icon(Icons.lock_outline_rounded),
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(

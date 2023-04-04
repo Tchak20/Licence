@@ -1,70 +1,102 @@
 import 'package:flutter/material.dart';
 
-class PotionRecipePage extends StatefulWidget {
+class HomePageE extends StatefulWidget {
+  const HomePageE({Key? key}) : super(key: key);
+
   @override
-  _PotionRecipePageState createState() => _PotionRecipePageState();
+  State<HomePageE> createState() => _HomePageEState();
 }
 
-class _PotionRecipePageState extends State<PotionRecipePage> {
+class _HomePageEState extends State<HomePageE> {
+  // This holds a list of fiction users
+  // You can use data fetched from a database or a server as well
+  final List<Map<String, dynamic>> _allUsers = [
+    {"id": 1, "name": "Andy", "age": 29},
+    {"id": 2, "name": "Aragon", "age": 40},
+    {"id": 3, "name": "Bob", "age": 5},
+    {"id": 4, "name": "Barbara", "age": 35},
+    {"id": 5, "name": "Candy", "age": 21},
+    {"id": 6, "name": "Colin", "age": 55},
+    {"id": 7, "name": "Audra", "age": 30},
+    {"id": 8, "name": "Banana", "age": 14},
+    {"id": 9, "name": "Caversky", "age": 100},
+    {"id": 10, "name": "Becky", "age": 32},
+  ];
+
+  // This list holds the data for the list view
+  List<Map<String, dynamic>> _foundUsers = [];
+  @override
+  initState() {
+    // at the beginning, all users are shown
+    _foundUsers = _allUsers;
+    super.initState();
+  }
+
+  // This function is called whenever the text field changes
+  void _runFilter(String enteredKeyword) {
+    List<Map<String, dynamic>> results = [];
+    if (enteredKeyword.isEmpty) {
+      // if the search field is empty or only contains white-space, we'll display all users
+      results = _allUsers;
+    } else {
+      results = _allUsers
+          .where((user) =>
+              user["name"].toLowerCase().contains(enteredKeyword.toLowerCase()))
+          .toList();
+      // we use the toLowerCase() method to make it case-insensitive
+    }
+
+    // Refresh the UI
+    setState(() {
+      _foundUsers = results;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Recette de Potion Médicinale'),
+        title: const Text('Kindacode.com'),
       ),
-      body: SingleChildScrollView(
+      body: Padding(
+        padding: const EdgeInsets.all(10),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Potion de Guérison',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
+            const SizedBox(
+              height: 20,
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Ingrédients :',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+            TextField(
+              onChanged: (value) => _runFilter(value),
+              decoration: const InputDecoration(
+                  labelText: 'Search', suffixIcon: Icon(Icons.search)),
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('- 2 tasses de racines de mandragore'),
-                  Text('- 1 poignée de fleurs de lavande'),
-                  Text('- 1/2 tasse de feuilles de menthe'),
-                  Text('- 3 cuillères à soupe de miel'),
-                  Text('- 1/4 tasse de sucre de canne'),
-                  Text('- 4 tasses d\'eau'),
-                ],
-              ),
+            const SizedBox(
+              height: 20,
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Instructions :',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('1. Couper les racines de mandragore en petits morceaux.'),
-                  Text('2. Mettre les morceaux de racines de mandragore, les fleurs de lavande, les feuilles de menthe, le miel et le sucre de canne dans une grande casserole.'),
-                  Text('3. Ajouter 4 tasses d\'eau à la casserole.'),
-                  Text('4. Porter à ébullition, puis réduire le feu et laisser mijoter pendant 30 minutes.'),
-                  Text('5. Retirer du feu et laisser refroidir.'),
-                  Text('6. Filtrer le liquide à travers un tamis fin et transférer la potion dans des bouteilles en verre.'),
-                  Text('7. Conserver au réfrigérateur jusqu\'à ce que la potion soit prête à être utilisée.'),
-                ],
-              ),
+            Expanded(
+              child: _foundUsers.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: _foundUsers.length,
+                      itemBuilder: (context, index) => Card(
+                        key: ValueKey(_foundUsers[index]["id"]),
+                        color: Colors.amberAccent,
+                        elevation: 4,
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        child: ListTile(
+                          leading: Text(
+                            _foundUsers[index]["id"].toString(),
+                            style: const TextStyle(fontSize: 24),
+                          ),
+                          title: Text(_foundUsers[index]['name']),
+                          subtitle: Text(
+                              '${_foundUsers[index]["age"].toString()} years old'),
+                        ),
+                      ),
+                    )
+                  : const Text(
+                      'No results found',
+                      style: TextStyle(fontSize: 24),
+                    ),
             ),
           ],
         ),

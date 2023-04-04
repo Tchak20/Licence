@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Newbar.dart';
 import 'package:flutter_application_1/Screens/diagnostic_page.dart';
+import 'package:flutter_application_1/Screens/plante_cat.dart';
 import 'package:flutter_application_1/Screens/plantes_page.dart';
 import 'package:flutter_application_1/Screens/proceder_page.dart';
 
@@ -33,9 +34,9 @@ class _HomePageState extends State<HomePage> {
           ][_currentIndex],
         ),
         body:[
-          const DiagnosticPage(),
-          const PlantesScreen(),
-          const ProcederScreen(),
+           ChatPage(),
+           PlanteCat(),
+           ProcederScreen(),
         ][_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Screens/diagnostic_page.dart';
 import 'package:flutter_application_1/Screens/home_pages.dart';
+import 'package:flutter_application_1/Screens/plante_cat.dart';
 import 'package:flutter_application_1/Screens/plantes_page.dart';
 import 'package:flutter_application_1/Screens/proceder_page.dart';
  
@@ -51,7 +52,7 @@ import 'package:flutter_application_1/Screens/proceder_page.dart';
             title: Text('Plantes'),
             onTap: () {
               Navigator.push(context, MaterialPageRoute(
-                    builder: (context) =>PlantesScreen()
+                    builder: (context) =>PlanteCat()
                     ));
             },
           ),
