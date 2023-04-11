@@ -42,6 +42,7 @@ dependencies:
   sidebar: ^0.0.1
   scroll_snap_list: ^0.9.1
   material_design_icons_flutter: ^6.0.7096
+  http: ^0.13.5
   #tflite: ^1.1.2
 
 dev_dependencies:

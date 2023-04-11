@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'dart:async';
+import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/Screens/home_pages.dart';
 
 import 'login_page.dart';
-
 
 class SignUpPage2 extends StatelessWidget {
   const SignUpPage2({Key? key}) : super(key: key);
@@ -12,28 +14,28 @@ class SignUpPage2 extends StatelessWidget {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
-        body:  Center(
-          child: SingleChildScrollView(
-            child: isSmallScreen
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      _Logo(),
-                      _FormContent(),
-                    ],
-                  )
-                : Container(
-                    padding: const EdgeInsets.all(32.0),
-                    constraints: const BoxConstraints(maxWidth: 800),
-                    child: Row(
-                      children: const [
-                        Expanded(child: _Logo()),
-                        Expanded(
-                          child: Center(child: _FormContent()),
+        body: Center(
+            child: SingleChildScrollView(
+                child: isSmallScreen
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          _Logo(),
+                          _FormContent(),
+                        ],
+                      )
+                    : Container(
+                        padding: const EdgeInsets.all(32.0),
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: Row(
+                          children: const [
+                            Expanded(child: _Logo()),
+                            Expanded(
+                              child: Center(child: _FormContent()),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ))));
+                      ))));
   }
 }
 
@@ -48,7 +50,7 @@ class _Logo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         SingleChildScrollView(
-        child: Padding(
+            child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
             "INSCRIPTION",
@@ -81,9 +83,57 @@ class __FormContentState extends State<_FormContent> {
   bool? isChecked = false; // état initial de la case à cocher
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  void register(http.MultipartRequest formData) async {
+    if (_formKey.currentState?.validate() ?? false) {
+      // Envoyer les données au serveur
+      var response = await formData.send();
 
-   @override
+      // Vérifier la réponse du serveur
+      if (response.statusCode == 200) {
+        try {
+          var responseBody = await response.stream.bytesToString();
+          Map<String, dynamic> data = jsonDecode(responseBody);
+          if (data['success'] == false) {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Alert !'),
+                  content: Text(' ${data['message']}'),
+                  actions: [
+                    TextButton(
+                        child: Text('OK'),
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SignUpPage2()))),
+                  ],
+                );
+              },
+            );
+          } else {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const SignInPage2()));
+          }
+        } catch (e) {
+          print("hhhhh");
+        }
+        // Naviguer vers une autre page
+      } else {
+        // Afficher un message d'erreur
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                'Une erreur s\'est produite lors de l\'envoi des données.')));
+      }
+    }
+  }
 
+  var data = new http.MultipartRequest(
+      'POST',
+      Uri.parse(
+          'https://enuretic-contracts.000webhostapp.com/crud/register.php'));
+
+  @override
   Widget _buildRadio(String value) {
     return Row(
       children: <Widget>[
@@ -96,7 +146,12 @@ class __FormContentState extends State<_FormContent> {
             });
           },
         ),
-        Text(value, style: TextStyle(fontSize: 20,),),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
       ],
     );
   }
@@ -104,7 +159,7 @@ class __FormContentState extends State<_FormContent> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-       child: Container(
+        child: Container(
       constraints: const BoxConstraints(maxWidth: 300),
       child: Form(
         key: _formKey,
@@ -112,12 +167,13 @@ class __FormContentState extends State<_FormContent> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
-             TextFormField(
+            TextFormField(
               validator: (value) {
                 // add email validation
                 if (value == null || value.isEmpty) {
                   return 'Veuillez saisir le nom';
+                } else {
+                  data.fields['nom'] = value;
                 }
 
                 return null;
@@ -130,12 +186,13 @@ class __FormContentState extends State<_FormContent> {
               ),
             ),
             _gap(),
-
             TextFormField(
               validator: (value) {
                 // add email validation
                 if (value == null || value.isEmpty) {
                   return 'Veuillez saisir le prenom';
+                } else {
+                  data.fields['prenom'] = value;
                 }
 
                 return null;
@@ -148,16 +205,6 @@ class __FormContentState extends State<_FormContent> {
               ),
             ),
             _gap(),
-     Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          _buildRadio('Masculin'),
-          _buildRadio('Féminin'),
-          
-        ],
-      ),
-          _gap(),
-
             TextFormField(
               validator: (value) {
                 // add email validation
@@ -170,6 +217,8 @@ class __FormContentState extends State<_FormContent> {
                     .hasMatch(value);
                 if (!emailValid) {
                   return 'Veuillez entrer un mail valide';
+                } else {
+                  data.fields['email'] = value;
                 }
 
                 return null;
@@ -182,16 +231,18 @@ class __FormContentState extends State<_FormContent> {
               ),
             ),
             _gap(),
-            
             TextFormField(
               validator: (value) {
-                pass = value;
-                if (value == null || value.isEmpty) {
-                  return 'Veuillez saisir le mot de passe';
+                if (value == null || value.isEmpty || value.length < 6) {
+                  return 'Veuillez saisir un  mot de passe (8 caractères Min)';
                 }
-
-                if (value.length < 6) {
-                  return 'Le mot de passe doit contenir 6 caractère au moins';
+                bool regExp = RegExp(
+                        r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+                    .hasMatch(value);
+                if (!regExp) {
+                  return 'Incorrect :  8 caractères Min (ex : Mario06ag@)';
+                } else {
+                  data.fields.addAll({'password': value});
                 }
                 return null;
               },
@@ -213,15 +264,16 @@ class __FormContentState extends State<_FormContent> {
                   )),
             ),
             _gap(),
-
-              TextFormField(
+            TextFormField(
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Veuillez saisir le mot de passe';
+                if (value == null || value.isEmpty || value.length < 8) {
+                  return 'Veuillez saisir un  mot de passe (8 caractères Min)';
                 }
-
-                if (value != pass) {
-                  return 'Les mot de passes sont différents';
+                bool regExp = RegExp(
+                        r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+                    .hasMatch(value);
+                if (!regExp) {
+                  return 'Incorrect :  8 caractères Min (ex : Mario06ag@)';
                 }
                 return null;
               },
@@ -243,22 +295,22 @@ class __FormContentState extends State<_FormContent> {
                   )),
             ),
             _gap(),
-           
-           GestureDetector(
-            onTap: () {
-               Navigator.push(context, MaterialPageRoute(
-                    builder: (context) =>const SignInPage2()
-                    ));
-            },
-            child: Text(
-              "Se connecter",
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                color: Colors.blue,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignInPage2()));
+              },
+              child: Text(
+                "Se connecter",
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  color: Colors.blue,
+                ),
               ),
             ),
-          ),
-          _gap(),
+            _gap(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -275,12 +327,7 @@ class __FormContentState extends State<_FormContent> {
                 ),
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
-                    
-                 //     onTap: (){
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (context) =>const SignInPage2()
-                    ));
-                //};
+                    register(data);
                   }
                 },
               ),

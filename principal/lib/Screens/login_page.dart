@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'dart:async';
+import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/Screens/home_pages.dart';
 import 'package:flutter_application_1/Screens/signup_page.dart';
 
@@ -10,28 +13,28 @@ class SignInPage2 extends StatelessWidget {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
-        body:  Center(
-          child: SingleChildScrollView(
-            child: isSmallScreen
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      _Logo(),
-                      _FormContent(),
-                    ],
-                  )
-                : Container(
-                    padding: const EdgeInsets.all(32.0),
-                    constraints: const BoxConstraints(maxWidth: 800),
-                    child: Row(
-                      children: const [
-                        Expanded(child: _Logo()),
-                        Expanded(
-                          child: Center(child: _FormContent()),
+        body: Center(
+            child: SingleChildScrollView(
+                child: isSmallScreen
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          _Logo(),
+                          _FormContent(),
+                        ],
+                      )
+                    : Container(
+                        padding: const EdgeInsets.all(32.0),
+                        constraints: const BoxConstraints(maxWidth: 800),
+                        child: Row(
+                          children: const [
+                            Expanded(child: _Logo()),
+                            Expanded(
+                              child: Center(child: _FormContent()),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ))));
+                      ))));
   }
 }
 
@@ -46,7 +49,7 @@ class _Logo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         SingleChildScrollView(
-        child: Padding(
+            child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
             "CONNEXION",
@@ -76,11 +79,52 @@ class __FormContentState extends State<_FormContent> {
   bool _rememberMe = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  void login(http.MultipartRequest formData) async {
+    if (_formKey.currentState?.validate() ?? false) {
+      // Envoyer les données au serveur
+      var response = await formData.send();
+      if (response.statusCode == 200) {
+        var responseBody = await response.stream.bytesToString();
+        Map<String, dynamic> data = jsonDecode(responseBody);
+        if (data['success'] == false) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Alert !'),
+                content: Text(' ${data['message']}'),
+                actions: [
+                  TextButton(
+                      child: Text('OK'),
+                      onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SignInPage2()))),
+                ],
+              );
+            },
+          );
+        } else {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const HomePage()));
+        }
+        // Naviguer vers une autre page
+      } else {
+        // Afficher un message d'erreur
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                'Une erreur s\'est produite lors de l\'envoi des données.')));
+      }
+    }
+  }
+
+  var log = new http.MultipartRequest('POST',
+      Uri.parse('https://enuretic-contracts.000webhostapp.com/crud/login.php'));
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-       child: Container(
+        child: Container(
       constraints: const BoxConstraints(maxWidth: 300),
       child: Form(
         key: _formKey,
@@ -100,6 +144,8 @@ class __FormContentState extends State<_FormContent> {
                     .hasMatch(value);
                 if (!emailValid) {
                   return 'Veuillez entrer un mail valide';
+                } else {
+                  log.fields['email'] = value;
                 }
 
                 return null;
@@ -114,12 +160,16 @@ class __FormContentState extends State<_FormContent> {
             _gap(),
             TextFormField(
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Veuillez saisir le mot de passe';
+                if (value == null || value.isEmpty || value.length < 6) {
+                  return 'Veuillez saisir un  mot de passe (8 caractères Min)';
                 }
-
-                if (value.length < 6) {
-                  return 'Le mot de passe doit contenir 6 caractère au moins';
+                bool regExp = RegExp(
+                        r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
+                    .hasMatch(value);
+                if (!regExp) {
+                  return 'Incorrect :  8 caractères Min (ex : Mario06ag@)';
+                } else {
+                  log.fields.addAll({'password': value});
                 }
                 return null;
               },
@@ -141,35 +191,22 @@ class __FormContentState extends State<_FormContent> {
                   )),
             ),
             _gap(),
-            CheckboxListTile(
-              value: _rememberMe,
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() {
-                  _rememberMe = value;
-                });
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignUpPage2()));
               },
-              title: const Text('Ce souvenir de moi '),
-              controlAffinity: ListTileControlAffinity.leading,
-              dense: true,
-              contentPadding: const EdgeInsets.all(0),
-            ),
-            _gap(),
-           GestureDetector(
-            onTap: () {
-               Navigator.push(context, MaterialPageRoute(
-                    builder: (context) =>const SignUpPage2()
-                    ));
-            },
-            child: Text(
-              "S'inscrire",
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                color: Colors.blue,
+              child: Text(
+                "S'inscrire",
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  color: Colors.blue,
+                ),
               ),
             ),
-          ),
-          _gap(),
+            _gap(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -186,12 +223,7 @@ class __FormContentState extends State<_FormContent> {
                 ),
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
-                    
-                 //     onTap: (){
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (context) =>const HomePage()
-                    ));
-                //};
+                    login(log);
                   }
                 },
               ),
