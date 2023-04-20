@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/Screens/home_pages.dart';
+import 'package:flutter_application_1/Screens/customTextField.dart';
+import 'package:flutter_application_1/Services/apiServices.dart';
 
+import 'Colors.dart';
 import 'login_page.dart';
 
 class SignUpPage2 extends StatelessWidget {
@@ -51,9 +54,9 @@ class _Logo extends StatelessWidget {
       children: [
         SingleChildScrollView(
             child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(0),
           child: Text(
-            "INSCRIPTION",
+            '',
             textAlign: TextAlign.center,
             style: isSmallScreen
                 ? Theme.of(context).textTheme.headlineSmall
@@ -76,62 +79,73 @@ class _FormContent extends StatefulWidget {
 }
 
 class __FormContentState extends State<_FormContent> {
+  TextEditingController passController = TextEditingController();
+  TextEditingController repassController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
   bool _isPasswordVisible = false;
   String _selectedValue = 'Option 1';
   String? pass = '';
   bool _rememberMe = false;
   bool? isChecked = false; // état initial de la case à cocher
+  _register() async {
+    var data = {
+      'nom': nameController.text,
+      'email': emailController.text,
+      'password': passController.text,
+    };
+    debugPrint(nameController.text);
+    debugPrint(emailController.text);
+    debugPrint(passController.text);
+    debugPrint(repassController.text);
+    _showMsg(msg) {
+      //
+      final snackBar = SnackBar(
+        backgroundColor: const Color.fromRGBO(184, 134, 11, 1),
+        content: Text(msg),
+        action: SnackBarAction(
+          label: 'Close',
+          textColor: Colors.white,
+          onPressed: () {
+            /*créer une page flutter avec un formulaire qui demande un nombre entre 2 et 4 et qui affich
+            e apres validattion une autre page contenant un formulaire de chmps n avec n égale a la valeurs saisis*/
+          },
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  void register(http.MultipartRequest formData) async {
-    if (_formKey.currentState?.validate() ?? false) {
-      // Envoyer les données au serveur
-      var response = await formData.send();
+    var res = await apiServices().postData(data, 'register');
+    var body = json.decode(res.body);
+    print(body);
+    if (body['success']) {
+      Map<String, dynamic> data = json.decode(res.body);
 
-      // Vérifier la réponse du serveur
-      if (response.statusCode == 200) {
-        try {
-          var responseBody = await response.stream.bytesToString();
-          Map<String, dynamic> data = jsonDecode(responseBody);
-          if (data['success'] == false) {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: Text('Alert !'),
-                  content: Text(' ${data['message']}'),
-                  actions: [
-                    TextButton(
-                        child: Text('OK'),
-                        onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SignUpPage2()))),
-                  ],
-                );
-              },
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const SignInPage2()));
+    } else {
+      if (!body['message']) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Alert !'),
+              content: Text(
+                  '* Nom: Obligatoire (3 - 20 caractères)\n * Email: Obligatoire & unique (ex: edoctor@gmail.com)\n* Mot de passe: Obligatoire & 8 caractères min'),
+              actions: [
+                TextButton(
+                    child: Text('OK'),
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpPage2()))),
+              ],
             );
-          } else {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const SignInPage2()));
-          }
-        } catch (e) {
-          print("hhhhh");
-        }
-        // Naviguer vers une autre page
-      } else {
-        // Afficher un message d'erreur
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-                'Une erreur s\'est produite lors de l\'envoi des données.')));
+          },
+        );
       }
     }
   }
-
-  var data = new http.MultipartRequest(
-      'POST',
-      Uri.parse(
-          'https://enuretic-contracts.000webhostapp.com/crud/register.php'));
 
   @override
   Widget _buildRadio(String value) {
@@ -158,185 +172,117 @@ class __FormContentState extends State<_FormContent> {
 
   @override
   Widget build(BuildContext context) {
+    final double height = MediaQuery.of(context).size.height;
     return SingleChildScrollView(
-        child: Container(
-      constraints: const BoxConstraints(maxWidth: 300),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextFormField(
-              validator: (value) {
-                // add email validation
-                if (value == null || value.isEmpty) {
-                  return 'Veuillez saisir le nom';
-                } else {
-                  data.fields['nom'] = value;
-                }
-
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: 'Nom',
-                hintText: 'Entrer votre nom',
-                prefixIcon: Icon(Icons.person),
-                border: OutlineInputBorder(),
-              ),
-            ),
-            _gap(),
-            TextFormField(
-              validator: (value) {
-                // add email validation
-                if (value == null || value.isEmpty) {
-                  return 'Veuillez saisir le prenom';
-                } else {
-                  data.fields['prenom'] = value;
-                }
-
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: 'Prénom',
-                hintText: 'Entrer votre prénom',
-                prefixIcon: Icon(Icons.person),
-                border: OutlineInputBorder(),
-              ),
-            ),
-            _gap(),
-            TextFormField(
-              validator: (value) {
-                // add email validation
-                if (value == null || value.isEmpty) {
-                  return 'Veuillez saisir le mail';
-                }
-
-                bool emailValid = RegExp(
-                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                    .hasMatch(value);
-                if (!emailValid) {
-                  return 'Veuillez entrer un mail valide';
-                } else {
-                  data.fields['email'] = value;
-                }
-
-                return null;
-              },
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                hintText: 'Entrer votre email',
-                prefixIcon: Icon(Icons.email_outlined),
-                border: OutlineInputBorder(),
-              ),
-            ),
-            _gap(),
-            TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty || value.length < 6) {
-                  return 'Veuillez saisir un  mot de passe (8 caractères Min)';
-                }
-                bool regExp = RegExp(
-                        r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
-                    .hasMatch(value);
-                if (!regExp) {
-                  return 'Incorrect :  8 caractères Min (ex : Mario06ag@)';
-                } else {
-                  data.fields.addAll({'password': value});
-                }
-                return null;
-              },
-              obscureText: !_isPasswordVisible,
-              decoration: InputDecoration(
-                  labelText: 'Mot de passe ',
-                  hintText: 'Entrer votre mot de passe ',
-                  prefixIcon: const Icon(Icons.lock_outline_rounded),
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(_isPasswordVisible
-                        ? Icons.visibility_off
-                        : Icons.visibility),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                  )),
-            ),
-            _gap(),
-            TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty || value.length < 8) {
-                  return 'Veuillez saisir un  mot de passe (8 caractères Min)';
-                }
-                bool regExp = RegExp(
-                        r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$')
-                    .hasMatch(value);
-                if (!regExp) {
-                  return 'Incorrect :  8 caractères Min (ex : Mario06ag@)';
-                }
-                return null;
-              },
-              obscureText: !_isPasswordVisible,
-              decoration: InputDecoration(
-                  labelText: 'Mot de passe ',
-                  hintText: 'Retapez votre mot de passe ',
-                  prefixIcon: const Icon(Icons.lock_outline_rounded),
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(_isPasswordVisible
-                        ? Icons.visibility_off
-                        : Icons.visibility),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                  )),
-            ),
-            _gap(),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SignInPage2()));
-              },
-              child: Text(
-                "Se connecter",
-                style: TextStyle(
-                  decoration: TextDecoration.underline,
-                  color: Colors.blue,
+        padding: const EdgeInsets.all(50),
+        child: Padding(
+          padding: EdgeInsets.only(top: height * 0.07),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(height: height * 0.05),
+                const Text(
+                  "Inscription",
+                  style: TextStyle(
+                      fontSize: 30, fontWeight: FontWeight.bold, color: pColor),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-            ),
-            _gap(),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4)),
+                SizedBox(height: height * 0.05),
+                TextInput(
+                    prefixIcon: Icon(Icons.person),
+                    textString: "Nom",
+                    textController: nameController,
+                    obscureText: false),
+                SizedBox(
+                  height: height * .05,
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text(
-                    'Inscription',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                TextInput(
+                    prefixIcon: Icon(Icons.email),
+                    textString: "Email",
+                    textController: emailController,
+                    obscureText: false),
+                SizedBox(
+                  height: height * .05,
                 ),
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    register(data);
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    ));
+                TextInput(
+                  prefixIcon: Icon(Icons.lock_outline_rounded),
+                  textString: "Password",
+                  textController: passController,
+                  obscureText: true,
+                ),
+                SizedBox(
+                  height: height * .05,
+                ),
+                TextInput(
+                  prefixIcon: Icon(Icons.lock_outline_rounded),
+                  textString: "Password",
+                  textController: repassController,
+                  obscureText: true,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          var route = MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  const SignInPage2());
+                          Navigator.of(context).push(route);
+                        },
+                        child: const Text(
+                          'Connexion',
+                          style: TextStyle(color: Colors.black, fontSize: 17),
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(pColor),
+                        ),
+                        onPressed: () {
+                          _register();
+                        },
+                        child: const Text('Register'),
+                      ),
+                    ),
+                  ],
+                )
+              ]),
+        ));
   }
+}
 
-  Widget _gap() => const SizedBox(height: 16);
+class TextInput extends StatelessWidget {
+  final String textString;
+  TextEditingController textController;
+  final bool obscureText;
+  final Icon prefixIcon;
+  TextInput(
+      {Key? key,
+      required this.textString,
+      required this.textController,
+      required this.obscureText,
+      required this.prefixIcon})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      style: const TextStyle(color: Color(0xFF000000)),
+      cursorColor: const Color(0xFF9b9b9b),
+      controller: textController,
+      keyboardType: TextInputType.text,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+          hintText: textString,
+          hintStyle: const TextStyle(
+              color: Color(0xFF9b9b9b),
+              fontSize: 15,
+              fontWeight: FontWeight.normal),
+          labelStyle: const TextStyle(color: Color.fromARGB(255, 74, 71, 71)),
+          border: const OutlineInputBorder(),
+          focusedBorder: const OutlineInputBorder()),
+    );
+  }
 }
