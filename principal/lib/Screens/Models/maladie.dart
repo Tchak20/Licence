@@ -4,14 +4,21 @@ import 'package:http/http.dart' as http;
 
 class Maladie {
   String nom_maladie;
-  List<String> symptomes;
+  String symptomes;
+  String image;
+  int count;
 
-  Maladie({required this.nom_maladie, required this.symptomes});
+  Maladie(
+      {required this.nom_maladie,
+      required this.symptomes,
+      required this.image,
+      this.count = 0});
 
   factory Maladie.fromJson(Map<String, dynamic> json) {
     return Maladie(
         nom_maladie: json['nom_maladie'] ?? '',
-        symptomes: json['symptomes'] ?? '');
+        symptomes: json['symptomes'] ?? '',
+        image: json['image'] ?? '');
   }
   //convert map list to object list
   static List<Maladie> fromJsonList(List<dynamic> jsonList) {
@@ -29,9 +36,10 @@ class Maladie {
   Map<String, dynamic> toJson() => {
         'nom_maladie': nom_maladie,
         'symptomes': symptomes,
+        'image': image,
       };
   @override
   String toString() {
-    return 'Maladie{nom_maladie: $nom_maladie, symptomes: $symptomes}';
+    return 'Maladie{nom_maladie: $nom_maladie, symptomes: $symptomes,image:$image}';
   }
 }

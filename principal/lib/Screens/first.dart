@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Screens/liste_maladies.dart';
+import 'package:flutter_application_1/Screens/login_page.dart';
 import 'package:flutter_application_1/Screens/second.dart';
+import 'package:flutter_application_1/Screens/second.dart';
+import 'package:flutter_application_1/Screens/controller.dart';
+import 'Models/maladie.dart';
+import 'Models/user.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:async';
 
-/// Page d'entrée pour déterminer le nombre de symptômes à saisir
 class FirstPage extends StatefulWidget {
   @override
   _FirstPageState createState() => _FirstPageState();
@@ -9,13 +17,140 @@ class FirstPage extends StatefulWidget {
 
 class _FirstPageState extends State<FirstPage> {
   final _formKey = GlobalKey<FormState>();
-  int _numberOfFields = 2;
+  int _numberOfFields = 3;
+
+  bool _isLoading = false;
+  int _currentIndex = 0;
+
+  void _showLoadingIndicator() {
+    setState(() {
+      _isLoading = true;
+    });
+  }
+
+  setCurrentIndex(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  void _hideLoadingIndicator() {
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  Future<User> getUserById(int id) async {
+    final userUrl = Uri.parse('http://127.0.0.1:8000/api/user/$id');
+    final response = await http.get(userUrl);
+    final body = json.decode(response.body);
+    return User.fromJson(body);
+  }
+
+  String name = '';
+  String email = '';
+  int myValue = SharedPreferencesHelper.prefs?.getInt('id') ?? 1;
+  getUser() async {
+    final user = await getUserById(myValue);
+    setState(() {
+      name = user.nom;
+      email = user.email;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Nombre de Symptômes'),
+          title: Text('Nombre de Symptômes'),
+          backgroundColor: Color.fromRGBO(216, 14, 91, 0.685)),
+      drawer: Drawer(
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('images/back.jpeg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: ListView(
+            children: [
+              UserAccountsDrawerHeader(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/back.jpeg'), // Chemin de l'image
+                    fit: BoxFit
+                        .cover, // Ajuste l'image pour couvrir tout l'espace disponible
+                  ),
+                ),
+                accountName: Text(name),
+                accountEmail: Text(email),
+                currentAccountPicture: CircleAvatar(
+                  backgroundImage: AssetImage('images/logo.jpeg'),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.medical_services,
+                    color: Color.fromRGBO(216, 14, 91, 0.685)),
+                title: Text('Maladies',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    )),
+                onTap: () {
+                  setCurrentIndex(1);
+                  Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => Liste()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.search,
+                    color: Color.fromRGBO(216, 14, 91, 0.685)),
+                title: Text('Rechercche par Symptômes',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    )),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => FirstPage()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.logout,
+                    color: Color.fromRGBO(216, 14, 91, 0.685)),
+                title: Text('Déconnexion',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    )),
+                onTap: () {
+                  SharedPreferencesHelper.prefs?.setInt('id', 0);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SignInPage2()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.monetization_on,
+                    color: Color.fromRGBO(216, 14, 91, 0.685)),
+                title: Text('Faire un don',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    )),
+                onTap: () {
+                  setCurrentIndex(2);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -45,8 +180,8 @@ class _FirstPageState extends State<FirstPage> {
                       if (n == null) {
                         return 'entrez un nombre valide';
                       }
-                      if (n < 2 || n > 4) {
-                        return 'Entrer un nombre entre 2 and 4';
+                      if (n < 3 || n > 6) {
+                        return 'Entrer un nombre entre 3 and 6';
                       }
                       return null;
                     },
@@ -57,7 +192,7 @@ class _FirstPageState extends State<FirstPage> {
                     },
                     decoration: InputDecoration(
                       hintText: 'Entrer un nombre',
-                      labelText: 'Nombre de Symptomes (2 à 4)',
+                      labelText: 'Nombre de Symptomes (3 à 6)',
                       prefixIcon: Icon(Icons.numbers),
                       labelStyle: TextStyle(
                         color: Color.fromARGB(255, 74, 71, 71),

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Screens/first.dart';
+import 'package:flutter_application_1/Screens/liste_maladies.dart';
 import 'package:flutter_application_1/Screens/select.dart';
 import 'package:flutter_application_1/Screens/signup_page.dart';
 import 'dart:convert';
 import 'dart:async';
+import 'package:flutter_application_1/Screens/controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application_1/Screens/home_pages.dart';
 import 'package:flutter_application_1/Screens/customTextField.dart';
 import 'package:flutter_application_1/Services/apiServices.dart';
-
 import 'Colors.dart';
 import 'login_page.dart';
 
@@ -52,25 +54,7 @@ class _Logo extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SingleChildScrollView(
-            child: Padding(
-          padding: const EdgeInsets.all(0),
-          child: Text(
-            '',
-            textAlign: TextAlign.center,
-            style: isSmallScreen
-                ? Theme.of(context).textTheme.headlineSmall
-                : Theme.of(context)
-                    .textTheme
-                    .headlineMedium
-                    ?.copyWith(color: Colors.black),
-          ),
-        ))
-      ],
-    );
+    return Column();
   }
 }
 
@@ -120,18 +104,14 @@ class __FormContentState extends State<_FormContent> {
     var body = json.decode(res.body);
     print(body);
     if (body['success']) {
-      //SharedPreferences localStorage = await SharedPreferences.getInstance();
-      // localStorage.setString('token', body['token']);
-      //localStorage.setString('user', json.encode(body['user']));
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('id', body['user']['id']);
+      SharedPreferencesHelper.prefs = prefs;
+
+      /////////////////////
       Map<String, dynamic> data = json.decode(res.body);
-      // await FlutterSession().set('user', json.encode(data['user']));
-      // var session = await FlutterSession().get('user');
 
-      // var userData = session;
-      // var userId = userData?['id'];
-
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => FirstPage()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Liste()));
     } else {
       _showMsg(body['message']);
     }
@@ -139,25 +119,7 @@ class __FormContentState extends State<_FormContent> {
 
   @override
   Widget _buildRadio(String value) {
-    return Row(
-      children: <Widget>[
-        Radio(
-          value: value,
-          groupValue: _selectedValue,
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedValue = newValue!;
-            });
-          },
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 20,
-          ),
-        ),
-      ],
-    );
+    return Row();
   }
 
   @override
@@ -168,63 +130,69 @@ class __FormContentState extends State<_FormContent> {
         child: Padding(
           padding: EdgeInsets.only(top: height * 0.07),
           child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(height: height * 0.05),
-                const Text(
-                  "Connexion",
-                  style: TextStyle(
-                      fontSize: 30, fontWeight: FontWeight.bold, color: pColor),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: height * 0.05),
-                TextInput(
-                    prefixIcon: Icon(Icons.email),
-                    textString: "Email",
-                    textController: emailController,
-                    obscureText: false),
-                SizedBox(
-                  height: height * .05,
-                ),
-                TextInput(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: height * 0.05),
+              Image.asset(
+                'images/logo.jpeg', // chemin de votre image
+                width: 200, // définir la largeur de l'image
+                height: 200, // définir la hauteur de l'image
+              ),
+              SizedBox(height: height * 0.05),
+              const Text(
+                "Connexion",
+                style: TextStyle(
+                    fontSize: 30, fontWeight: FontWeight.bold, color: pColor),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: height * 0.05),
+              TextInput(
+                  prefixIcon: Icon(Icons.email),
+                  textString: "Email",
+                  textController: emailController,
+                  obscureText: false),
+              SizedBox(
+                height: height * .05,
+              ),
+              TextInput(
                   prefixIcon: Icon(Icons.lock_outline_rounded),
                   textString: "Password",
                   textController: passController,
-                  obscureText: true,
-                ),
-                SizedBox(
-                  height: height * .05,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                        onPressed: () {
-                          var route = MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  const SignUpPage2());
-                          Navigator.of(context).push(route);
-                        },
-                        child: const Text(
-                          'Inscription',
-                          style: TextStyle(color: Colors.black, fontSize: 17),
-                        )),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(pColor),
-                        ),
-                        onPressed: () {
-                          _login();
-                        },
-                        child: const Text('Connexion'),
+                  obscureText: true),
+              SizedBox(
+                height: height * .05,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        var route = MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                const SignUpPage2());
+                        Navigator.of(context).push(route);
+                      },
+                      child: const Text(
+                        'Inscription',
+                        style: TextStyle(color: Colors.black, fontSize: 17),
+                      )),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(pColor),
                       ),
+                      onPressed: () {
+                        _login();
+                      },
+                      child: const Text('Connexion'),
                     ),
-                  ],
-                )
-              ]),
+                  ),
+                ],
+              )
+            ],
+          ),
         ));
   }
 }

@@ -49,6 +49,15 @@ dependencies:
   json_annotation: ^4.8.0
   shared_preferences: ^2.1.0
   flutter_spinkit: ^5.1.0
+  share: ^2.0.4
+  flutter_share: ^2.0.0
+  get: ^4.6.5
+  mailer: ^5.0.0
+  flutter_mailer:
+  pdf:
+  intl: ^0.17.0
+  flutter_share_me: ^0.11.0
+  webview_flutter: ^4.2.0
   #tflite: ^1.1.2
 
 dev_dependencies:

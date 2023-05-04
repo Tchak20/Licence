@@ -8,7 +8,7 @@ import '../Screens/Models/user.dart';
 class apiServices {
   final String _url = 'http://127.0.0.1:8000/api/';
   Future<List<User>> getuser() async {
-    final alluserUrl = Uri.parse('http://127.0.0.1:8000/api/index');
+    final alluserUrl = Uri.parse('http://127.0.0.1:8000/api/user');
     final response = await http.get(alluserUrl);
     // print(response.body);
     List<User> allUser = [];
