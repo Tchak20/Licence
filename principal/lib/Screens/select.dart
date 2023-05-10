@@ -6,6 +6,7 @@ import 'package:flutter_application_1/Screens/message.dart';
 import 'package:flutter_application_1/Screens/page.dart';
 import 'package:flutter_application_1/Screens/controller.dart';
 import 'package:flutter_application_1/Screens/mail.dart';
+import 'package:flutter_application_1/Services/apiServices.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -15,6 +16,7 @@ import 'package:flutter_share/flutter_share.dart';
 import '../Services/apiServices.dart';
 import 'package:share/share.dart';
 import 'Models/maladie.dart';
+import 'Models/fiche.dart';
 
 class Home extends StatefulWidget {
   final List<String> cardTitles;
@@ -39,6 +41,7 @@ class _HomeState extends State<Home> {
   List<Maladie>? listOfUsersFiltered;
   bool isLoading = false;
   String? errorMessage;
+
   Future<List<dynamic>> fetchMaladies() async {
     final response =
         await http.get(Uri.parse('http://127.0.0.1:8000/api/maladies'));
@@ -194,13 +197,44 @@ class CardDetails extends StatefulWidget {
 class _CardDetailsState extends State<CardDetails> {
   final ScrollController _scrollController = ScrollController();
   final _emailController = TextEditingController();
+  late Fiche _fiche =
+      Fiche(id: 0, maladies_id: 0, traitements: '', prevention: '', autres: '');
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFiche(widget.maladie.id);
+  }
+
+  Future<void> fetchFiche(int id) async {
+    final response =
+        await http.get(Uri.parse('http://127.0.0.1:8000/api/fiche/$id'));
+    if (response.statusCode == 200) {
+      final jsonMap = json.decode(response.body);
+      final fiche = Fiche.fromJson(jsonMap);
+      setState(() {
+        _fiche = fiche;
+      });
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final String? name = SharedPreferencesHelper.nom;
     final String? email = SharedPreferencesHelper.email;
     return Scaffold(
       appBar: AppBar(
-          title: Text('Symptômes'),
+          title: Text('Fiche Maladie'),
+          actions: [
+          IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
           backgroundColor: Color.fromRGBO(216, 14, 91, 0.685)),
       drawer: Drawer(
         child: Container(
@@ -301,11 +335,12 @@ class _CardDetailsState extends State<CardDetails> {
                     children: <Widget>[
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10.0),
-                        child: Image.asset(
-                          widget.maladie.image,
-                          width: 70,
-                          height: 70,
+                        child: Image(
+                          image: NetworkImage(
+                              'http://127.0.0.1:8000/storage/${widget.maladie.image}'),
                           fit: BoxFit.cover,
+                          width: 100,
+                          height: 70,
                         ),
                       ),
                       SizedBox(width: 20),
@@ -321,6 +356,30 @@ class _CardDetailsState extends State<CardDetails> {
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+              SizedBox(width: 20),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Description',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(widget.maladie.description),
+                    ], 
                   ),
                 ),
               ),
@@ -342,32 +401,19 @@ class _CardDetailsState extends State<CardDetails> {
                         ),
                       ),
                       SizedBox(height: 10),
-                      Text(widget.maladie.symptomes),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(15),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Solution',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Pellentesque eget magna rhoncus, semper metus in, posuere tellus.',
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:
+                            widget.maladie.symptomes.split(",").map((phrase) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.arrow_right),
+                              SizedBox(width: 10),
+                              Expanded(child: Text(phrase)),
+                            ],
+                          );
+                        }).toList(),
                       ),
                     ],
                   ),
@@ -385,16 +431,86 @@ class _CardDetailsState extends State<CardDetails> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        'Mise en garde',
+                        'Traitements',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       SizedBox(height: 10),
-                      Text(
-                        'Morbi accumsan volutpat purus non bibendum.',
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: _fiche.traitements.split(",").map((phras) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.arrow_right),
+                              SizedBox(width: 10),
+                              Expanded(child: Text(phras)),
+                            ],
+                          );
+                        }).toList(),
                       ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Préventions',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: _fiche.prevention.split(",").map((phrasee) {
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.arrow_right),
+                              SizedBox(width: 10),
+                              Expanded(child: Text(phrasee)),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Plus d\'informations',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(_fiche.autres),
                     ],
                   ),
                 ),
@@ -404,9 +520,12 @@ class _CardDetailsState extends State<CardDetails> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: ()  {
-           Navigator.push(context,
-            MaterialPageRoute(builder: (context) => EmailFormPage(maladie:widget.maladie)));
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      EmailFormPage(maladie: widget.maladie)));
         },
         child: Icon(
           Icons.share,

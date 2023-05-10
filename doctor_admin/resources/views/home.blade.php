@@ -6,20 +6,28 @@
 {{ session('info') }}
 </div>
 @endif
-    <div class="container py-5">
-        <h1 class="text-lg font-medium text-gray-900 text-center" style="font-size: 47px">{{ __('Liste des maladies') }}</h1>
-        <form class="d-flex mt-4 mx-auto" action="{{ route('home') }}" method="GET">
-            <input class="form-control me-2 w-50" name="q" type="text" placeholder="Recherche" aria-label="Recherche" >
-            <button class="btn btn-outline-primary" type="submit">Recherche</button>
-        </form>
-        <a href="{{ route('home.create') }}" class="btn btn-success mb-5 mt-4 mx-auto" data-bs-toggle="modal" data-bs-target="#exampleModal">Ajouter <i class="bi bi-plus-lg"></i></a>
+    <div class="container py-5" style="">
+        <div class="card col-md-10 m-auto mb-5" style="padding:20px;">
+          <h1 class=" text-lg font-medium text-gray-900 text-center" style="font-size: 47px">{{ __('Liste des maladies') }}</h1>
+          <div class="row">
+            <div class="col-md-9">
+            <form class="d-flex mt-4 mx-auto" action="{{ route('home') }}" method="GET">
+              <input class="form-control me-2 w-50" name="q" type="text" placeholder="Recherche" aria-label="Recherche" >
+              <button class="btn btn-outline-primary" type="submit">Recherche</button>
+            </form>
+          </div>
+          <div class="col-md-3">
+          <a  href="{{ route('home.create') }}" class=" my btn btn-success mb-5 mt-4 mx-auto" data-bs-toggle="modal" data-bs-target="#exampleModal">Ajouter une Maladie<i class="bi bi-plus-lg"></i></a>
+          </div>
+          </div>
+        </div>
         <div class="row row-cols-1 row-cols-md-3 g-4">
             @foreach($maladies as $maladie)
                 <div class="col" style="height: 350px;">
-                    <div class="card h-100">
+                    <div class="card h-100 zoomable">
                       
                         <div class="card-body h-100">
-                            <img src="{{asset('storage/'.$maladie->image)}}" class="card-img-top h-50" alt="{{ $maladie->nom }}">
+                            <img src="{{asset('storage/'.$maladie->image)}}" class=" card-img-top h-50" alt="{{ $maladie->nom }}">
                             <h3 class="card-title">{{ $maladie->nom_maladie }}</h3>
                             <p class="card-text text-truncate">{{ $maladie->description }}</p>
                             <a href="{{ route('home.show', $maladie->id)}}" class="card-link text-primary">Voir plus</a>

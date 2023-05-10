@@ -23,6 +23,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::put('/home/update/{id}', [App\Http\Controllers\HomeController::class, 'update2'])->name('home.update2');
 Route::get('/home/create', [App\Http\Controllers\HomeController::class, 'create'])->name('home.create');
 Route::post('/home', [App\Http\Controllers\HomeController::class, 'store'])->name('home.store');
 Route::get('/home/{id}', [App\Http\Controllers\HomeController::class, 'show'])->name('home.show');

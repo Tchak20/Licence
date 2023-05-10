@@ -14,6 +14,7 @@ import '../Services/apiServices.dart';
 import 'Colors.dart';
 import 'Models/maladie.dart';
 import 'Models/user.dart';
+import 'Models/fiche.dart';
 
 class Liste extends StatefulWidget {
   const Liste({
@@ -295,8 +296,9 @@ class _ListeState extends State<Liste> {
                                                               BorderRadius
                                                                   .circular(
                                                                       10.0),
-                                                          child: Image.asset(
-                                                            maladie.image,
+                                                          child: Image(
+                                                            image: NetworkImage(
+                                                                'http://127.0.0.1:8000/storage/${maladie.image}'),
                                                             fit: BoxFit.cover,
                                                           ),
                                                         ),

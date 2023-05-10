@@ -126,7 +126,8 @@ class AutrePage extends StatelessWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       image: DecorationImage(
-                        image: AssetImage(maladie.image),
+                        image: NetworkImage(
+                            'http://127.0.0.1:8000/storage/${maladie.image}'),
                         fit: BoxFit.cover,
                       ),
                     ),

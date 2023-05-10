@@ -39,7 +39,7 @@
                                     </span>
                                 @enderror
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mb-2">
                                 <label for="password-confirm">{{ __('Confirmer le mot de passe') }}</label>
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                             </div>

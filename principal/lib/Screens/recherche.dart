@@ -6,19 +6,44 @@ import 'package:flutter_application_1/Screens/select.dart';
 import 'Models/maladie.dart';
 import 'package:flutter_application_1/Screens/controller.dart';
 
-class Search extends StatelessWidget {
+class Search extends StatefulWidget {
   final String query;
   final List<Maladie> maladies;
 
   Search({required this.query, required this.maladies});
+  @override
+  _SearchState createState() => _SearchState();
+}
+
+class _SearchState extends State<Search> with TickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
   final String? name = SharedPreferencesHelper.nom;
   final String? email = SharedPreferencesHelper.email;
 
   @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500),
+    );
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    List<Maladie> filteredMaladies = maladies
-        .where((maladie) =>
-            maladie.nom_maladie.toLowerCase().contains(query.toLowerCase()))
+    List<Maladie> filteredMaladies = widget.maladies
+        .where((maladie) => maladie.nom_maladie
+            .toLowerCase()
+            .contains(widget.query.toLowerCase()))
         .toList();
 
     return Scaffold(
@@ -107,11 +132,31 @@ class Search extends StatelessWidget {
       ),
       body: filteredMaladies.isEmpty
           ? Center(
-              child: Card(
-                margin: EdgeInsets.all(20),
-                child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text('Aucune maladie trouvée'),
+              child: ScaleTransition(
+                scale: _animation,
+                child: Card(
+                  margin: EdgeInsets.all(20),
+                  child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.warning, color: Colors.orange),
+                        SizedBox(height: 10),
+                        Text('Aucune maladie trouvée'),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Liste()));
+                          },
+                          child: Text('Retour'),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             )
@@ -137,8 +182,9 @@ class Search extends StatelessWidget {
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10.0),
-                                child: Image.asset(
-                                  filteredMaladies[index].image,
+                                child: Image(
+                                  image: NetworkImage(
+                                      'http://127.0.0.1:8000/storage/${filteredMaladies[index].image}'),
                                   fit: BoxFit.cover,
                                 ),
                               ),
